@@ -13,6 +13,7 @@
             --text-secondary: rgba(255,255,255,0.7);
             --card-bg: rgba(255,255,255,0.03);
             --card-border: rgba(255,255,255,0.1);
+            --sidebar-width: 280px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, 'Segoe UI', 'Noto Sans SC', sans-serif; background: var(--bg-dark); color: var(--text-primary); min-height: 100vh; }
@@ -37,8 +38,6 @@
         .btn { padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.3s; }
         .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3); }
-        .btn-secondary { background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border); }
-        .btn-secondary:hover { background: rgba(255,255,255,0.05); }
         .tab-panel { display: none; animation: fadeIn 0.3s ease; }
         .tab-panel.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -51,15 +50,7 @@
         .card-title { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 6px; }
         .card-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; }
         .card-meta { display: flex; gap: 12px; font-size: 12px; color: var(--text-secondary); }
-        .card-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; opacity: 0; transition: opacity 0.2s ease; }
-        .card:hover .card-actions { opacity: 1; }
-        .card-btn { width: 28px; height: 28px; border-radius: 6px; background: rgba(0,0,0,0.6); border: 1px solid var(--card-border); color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.2s ease; }
-        .card-btn:hover { background: var(--primary); border-color: var(--primary); color: white; }
-        .empty-state { text-align: center; padding: 60px 20px; background: var(--card-bg); border: 1px dashed var(--card-border); border-radius: 12px; }
-        .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
-        .empty-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
-        .empty-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
-        @media (max-width: 1024px) { .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; } .sidebar.open { transform: translateX(0); } .content { margin-left: 0; } }
+        @media (max-width: 1024px) { .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; } .content { margin-left: 0; } }
         @media (max-width: 768px) { .nav-links { display: none; } .content { padding: 20px; } .card-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -172,52 +163,11 @@
             </div>
         </main>
     </div>
-    <div class="modal-overlay" id="characterModal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3 class="modal-title" id="characterModalTitle">新建角色</h3>
-                <button class="modal-close" onclick="closeCharacterModal()">✕</button>
-            </div>
-            <div class="modal-body">
-                <form id="characterForm">
-                    <input type="hidden" id="characterId">
-                    <div class="form-group">
-                        <label class="form-label">角色姓名 *</label>
-                        <input type="text" class="form-input" id="charName" required placeholder="输入角色姓名">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">身份/职业 *</label>
-                            <input type="text" class="form-input" id="charRole" required placeholder="例如：星际法师">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">年龄</label>
-                            <input type="number" class="form-input" id="charAge" placeholder="25">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">隶属势力</label>
-                        <select class="form-select" id="charFaction">
-                            <option value="">无</option>
-                            <option value="stellar-council">星界议会</option>
-                            <option value="free-alliance">自由星盟</option>
-                            <option value="neutral">中立</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">核心能力/装备</label>
-                        <input type="text" class="form-input" id="charAbility" placeholder="例如：星界感知、时空法杖">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">背景故事 *</label>
-                        <textarea class="form-textarea" id="charBackground" rows="4" required placeholder="描述角色的背景、性格和经历..."></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeCharacterModal()">取消</button>
-                <button type="button" class="btn btn-primary" onclick="saveCharacter()">保存</button>
-            </div>
-        </div>
-    </div>
     <script>
+        const appState={activeTab:'characters',characters:[],factions:[],locations:[],technologies:[],selectedLocation:null,editingCharacterId:null};
+        document.addEventListener('DOMContentLoaded',()=>{initData();renderAll();});
+        function initData(){
+            appState.characters=[{id:1,name:'艾瑞恩·星语',role:'星际法师',age:22,faction:'neutral',ability:'星界感知、时空法杖',background:'来自边缘星域的年轻法师，拥有罕见的星界感知能力。性格内敛但意志坚定。',icon:'🧙‍♂️',status:'主角'},{id:2,name:'凯拉·铁心',role:'前星际佣兵',age:28,faction:'free-alliance',ability:'近身格斗、战术规划',background:'前星际佣兵，实战经验丰富，擅长近身格斗与战术规划。性格直爽，重情重义。',icon:'⚔️',status:'配角'}];
+            appState.factions=[{id:1,name:'星界议会',type:'dominant',influence:95,military:88,description:'统治已知星域的至高权力机构，由七大星系代表组成。主张秩序与稳定。',icon:'🏛️',color:'#667eea'},{id:2,name:'自由星盟',type:'rebel',influence:45,military:62,description:'由边缘星系和独立势力组成的松散联盟，反对星界议会的集权统治。',icon:'⚡',color:'#f5576c'}];
+            appState.locations=[{id:1,name:'中央星域 · 议会之都',type:'political',environment:'人工生态穹顶城市',gravity:'1.0G（标准地球重力）',resources:'政治资源、金融资本、高端科技',strategic:'星界议会总部所在地，已知星域的政治中心',icon:'🏛️'},{id:2,name:'边缘星域 · 研究站阿尔法',type:'research',environment:'小行星改造空间站',gravity:'0.3G（低重力环境）',resources:'稀有矿物、前沿科研成果',strategic:'星界议会最高机密研究设施，涉及禁忌科技',icon:'🔬'},{id:3,name:'边境地带 · 冲突区',type:'military',environment:'破碎行星带与废弃空间站',gravity:'不稳定（0.1-0.8G不等）',resources:'战利品、黑市交易、走私物资',strategic:'星界议会与自由星盟争夺的前沿地带，海盗与雇佣兵活跃',icon:'⚔️'}];
+            appState.technologies=[{id:1,category:'propulsion',name:'跃迁引擎原理',description:'通过扭曲局部时空结构，在两点之间创建"虫洞"通道，实现超光速航行。引擎核心使用稀有的"星核水晶"作为能量源。',icon:'🚀',rules:[{title:'跃迁距离限制',desc:'单次跃迁最大距离不超过50光年，超过此距离需要多次分段跃迁。'},{title:'跃迁冷却时间',desc:'每次跃迁后，引擎需要至少72小时的冷却和充能时间。'},{title:'引力井干扰',desc:'大质量天体（如恒星、黑洞）附近的强引力场会干扰跃迁通道，需要保持距离。'}]},{id:2,category:'physics',name:'基础物理法则差异',description:'本宇宙的物理法则与标准宇宙存在微妙差异，这些差异是魔法与科技共存的基础。',icon:'⚛️',rules:[{title:'意识干涉效应',desc:'在微观层面，观察者的意识可以轻微影响量子态的塌缩结果。这是所有魔法现象的物理基础。'},{title:'以太场理论',desc:'宇宙中存在一种被称为"以太"的能量场，它贯穿所有空间。魔法本质上是操控以太场的技术。'},{title:'熵减可能性',desc:'在局部区域，通过输入外部能量，可以短暂地实现熵减，这解释了某些"治愈"类魔法的效果。'}]},{id:3,category:'treaty',name:'关键协议与条约',description:'历史上签署的重要协议，塑造了当前星际政治格局。',icon:'📜',rules:[{title:'星界公约（宇宙历0年）',desc:'确立了星界议会的最高权威，
