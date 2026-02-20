@@ -572,6 +572,390 @@
                 <form id="characterForm">
                     <input type="hidden" id="characterId">
                     <div class="form-group">
+                        <label class="form-label">姓名 *</label>
+                        <input type="text" class="form-input" id="charName" placeholder="输入角色姓名" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">身份/职业 *</label>
+                            <input type="text" class="form-input" id="charRole" placeholder="例如：星法师" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">年龄</label>
+                            <input type="number" class="form-input" id="charAge" placeholder="25">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">隶属势力</label>
+                        <select class="form-select" id="charFaction">
+                            <option value="">-- 选择势力 --</option>
+                            <option value="council">星界议会</option>
+                            <option value="alliance">自由星盟</option>
+                            <option value="independent">独立势力</option>
+                            <option value="neutral">中立</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">核心能力/装备</label>
+                        <input type="text" class="form-input" id="charAbility" placeholder="例如：星界共鸣、星辰法杖">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">背景故事</label>
+                        <textarea class="form-textarea" id="charBackground" placeholder="描述角色的出身、经历和动机..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeCharacterModal()">取消</button>
+                <button type="button" class="btn btn-danger" id="deleteCharBtn" onclick="deleteCharacter()" style="display: none;">删除</button>
+                <button type="button" class="btn btn-primary" onclick="saveCharacter()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 生成星空
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 200; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.opacity = Math.random() * 0.8 + 0.2;
+            starsContainer.appendChild(star);
+        }
+
+        // ===== Tab 切换 =====
+        function switchTab(tabName) {
+            // 更新侧边栏激活状态
+            document.querySelectorAll('.tab-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.tab === tabName) {
+                    link.classList.add('active');
+                }
+            });
+
+            // 更新内容面板
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+
+            // 更新URL hash
+            history.replaceState(null, null, '#' + tabName);
+        }
+
+        // 页面加载时检查 hash
+        window.addEventListener('load', () => {
+            const hash = window.location.hash.slice(1);
+            if (hash && ['characters', 'factions', 'geography', 'technology'].includes(hash)) {
+                switchTab(hash);
+            }
+        });
+
+        // ===== 人物档案 CRUD =====
+        let characters = [
+            {
+                id: 1,
+                name: '艾瑞恩·星语',
+                role: '星法师',
+                age: 22,
+                faction: 'council',
+                ability: '星界共鸣、星辰法杖',
+                background: '来自边缘星域的年轻法师，拥有罕见的星界感知能力。性格内敛但意志坚定，正在寻找自己力量的真正来源。',
+                icon: '🧙‍♂️'
+            },
+            {
+                id: 2,
+                name: '凯拉·铁心',
+                role: '护卫',
+                age: 28,
+                faction: 'alliance',
+                ability: '近战格斗、战术规划',
+                background: '前星际佣兵，现为艾瑞恩的护卫。实战经验丰富，擅长近身格斗与战术规划，有着不为人知的过去。',
+                icon: '⚔️'
+            }
+        ];
+
+        function renderCharacters() {
+            const grid = document.getElementById('characters-grid');
+            grid.innerHTML = characters.map(char => `
+                <div class="card" onclick="editCharacter(${char.id})">
+                    <div class="card-header">
+                        <div class="card-icon">${char.icon}</div>
+                        <div class="card-actions" onclick="event.stopPropagation()">
+                            <button class="btn btn-icon" style="width: 28px; height: 28px; padding: 0;" onclick="editCharacter(${char.id})">✏️</button>
+                            <button class="btn btn-icon" style="width: 28px; height: 28px; padding: 0; color: var(--danger);" onclick="deleteCharacterById(${char.id})">🗑️</button>
+                        </div>
+                    </div>
+                    <h3 class="card-title">${char.name}</h3>
+                    <p class="card-desc">${char.background.substring(0, 80)}${char.background.length > 80 ? '...' : ''}</p>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
+                        <span class="card-tag">${char.role}</span>
+                        ${char.faction ? `<span class="card-tag" style="background: ${getFactionColor(char.faction)}20; color: ${getFactionColor(char.faction)};">${getFactionName(char.faction)}</span>` : ''}
+                        <span class="card-tag" style="background: rgba(255,255,255,0.05); color: var(--text-muted);">${char.age}岁</span>
+                    </div>
+                </div>
+            `).join('') + `
+                <div class="card add-card" onclick="openCharacterModal()">
+                    <div class="add-icon">+</div>
+                    <div class="add-text">创建新角色</div>
+                </div>
+            `;
+        }
+
+        function getFactionColor(faction) {
+            const colors = {
+                council: '#667eea',
+                alliance: '#f5576c',
+                independent: '#f59e0b',
+                neutral: '#10b981'
+            };
+            return colors[faction] || '#667eea';
+        }
+
+        function getFactionName(faction) {
+            const names = {
+                council: '星界议会',
+                alliance: '自由星盟',
+                independent: '独立势力',
+                neutral: '中立'
+            };
+            return names[faction] || faction;
+        }
+
+        // Modal 控制
+        function openCharacterModal(characterId = null) {
+            const modal = document.getElementById('characterModal');
+            const form = document.getElementById('characterForm');
+            const title = document.getElementById('modalTitle');
+            const deleteBtn = document.getElementById('deleteCharBtn');
+            
+            form.reset();
+            document.getElementById('characterId').value = '';
+            
+            if (characterId) {
+                const char = characters.find(c => c.id === characterId);
+                if (char) {
+                    title.textContent = '编辑角色';
+                    document.getElementById('characterId').value = char.id;
+                    document.getElementById('charName').value = char.name;
+                    document.getElementById('charRole').value = char.role;
+                    document.getElementById('charAge').value = char.age;
+                    document.getElementById('charFaction').value = char.faction;
+                    document.getElementById('charAbility').value = char.ability;
+                    document.getElementById('charBackground').value = char.background;
+                    deleteBtn.style.display = 'inline-flex';
+                }
+            } else {
+                title.textContent = '新建角色';
+                deleteBtn.style.display = 'none';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeCharacterModal() {
+            document.getElementById('characterModal').classList.remove('active');
+        }
+
+        function saveCharacter() {
+            const id = document.getElementById('characterId').value;
+            const name = document.getElementById('charName').value.trim();
+            const role = document.getElementById('charRole').value.trim();
+            
+            if (!name || !role) {
+                alert('请填写姓名和身份/职业');
+                return;
+            }
+            
+            const characterData = {
+                name: name,
+                role: role,
+                age: parseInt(document.getElementById('charAge').value) || 0,
+                faction: document.getElementById('charFaction').value,
+                ability: document.getElementById('charAbility').value.trim(),
+                background: document.getElementById('charBackground').value.trim(),
+                icon: getIconForRole(role)
+            };
+            
+            if (id) {
+                // 编辑
+                const index = characters.findIndex(c => c.id === parseInt(id));
+                if (index !== -1) {
+                    characters[index] = { ...characters[index], ...characterData };
+                }
+            } else {
+                // 新建
+                const newId = characters.length > 0 ? Math.max(...characters.map(c => c.id)) + 1 : 1;
+                characters.push({ id: newId, ...characterData });
+            }
+            
+            renderCharacters();
+            closeCharacterModal();
+        }
+
+        function getIconForRole(role) {
+            const roleIcons = {
+                '法师': '🧙‍♂️',
+                '战士': '⚔️',
+                '护卫': '🛡️',
+                '星法师': '✨',
+                '佣兵': '⚔️',
+                '学者': '📚',
+                '商人': '💰',
+                '领袖': '👑'
+            };
+            for (let key in roleIcons) {
+                if (role.includes(key)) return roleIcons[key];
+            }
+            return '👤';
+        }
+
+        function editCharacter(id) {
+            openCharacterModal(id);
+        }
+
+        function deleteCharacter() {
+            const id = document.getElementById('characterId').value;
+            if (id) {
+                deleteCharacterById(parseInt(id));
+            }
+        }
+
+        function deleteCharacterById(id) {
+            if (confirm('确定要删除这个角色吗？')) {
+                characters = characters.filter(c => c.id !== id);
+                renderCharacters();
+                closeCharacterModal();
+            }
+        }
+
+        // ===== 势力阵营 =====
+        function createFaction() {
+            alert('新建势力功能即将上线');
+        }
+
+        // ===== 星图地理 =====
+        const locations = {
+            central: {
+                name: '中央星域',
+                type: '政治中心',
+                icon: '🏛️',
+                envParams: '氧气含量: 21% | 温度: 22°C | 重力: 1.0G',
+                gravity: '标准地球重力 (1.0G)',
+                resources: '政治资源、金融资本、高端科技、人才储备',
+                strategic: '星界议会所在地，控制七大星系的外交与军事决策中心。拥有最发达的跃迁网络，是星际贸易的枢纽。'
+            },
+            frontier: {
+                name: '边缘研究站',
+                type: '科研设施',
+                icon: '🔬',
+                envParams: '氧气含量: 18% | 温度: -5°C | 重力: 0.7G',
+                gravity: '低重力环境 (0.7G)',
+                resources: '星界能量矿脉、稀有元素、实验数据',
+                strategic: '位于星界能量富集区域，是研究星界物理现象的前沿基地。设有严格的保密协议，未经授权的舰船不得靠近。'
+            },
+            border: {
+                name: '边境冲突区',
+                type: '军事区域',
+                icon: '⚔️',
+                envParams: '氧气含量: 15% | 温度: 45°C | 重力: 1.2G',
+                gravity: '高重力环境 (1.2G)',
+                resources: '战略矿物、军事要塞、训练场',
+                strategic: '星界议会与自由星盟的军事缓冲区，双方在此驻扎重兵。由于历史遗留问题，该区域长期处于紧张状态，小规模冲突时有发生。'
+            }
+        };
+
+        let selectedLocation = 'central';
+
+        function selectLocation(element, locationKey) {
+            // 移除其他选中状态
+            document.querySelectorAll('.location-item').forEach(item => {
+                item.classList.remove('active');
+                item.style.background = '';
+                item.style.borderLeft = '';
+            });
+            // 添加选中状态
+            element.classList.add('active');
+            element.style.background = 'var(--bg-active)';
+            element.style.borderLeft = '3px solid var(--primary)';
+            
+            selectedLocation = locationKey;
+            renderLocationDetails();
+        }
+
+        function renderLocationDetails() {
+            const loc = locations[selectedLocation];
+            const container = document.getElementById('location-details');
+            container.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+                    <div style="font-size: 48px;">${loc.icon}</div>
+                    <div>
+                        <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 4px;">${loc.name}</h2>
+                        <span style="display: inline-block; padding: 4px 12px; background: var(--bg-active); border-radius: 20px; font-size: 12px; color: var(--primary);">${loc.type}</span>
+                    </div>
+                </div>
+                <div style="display: grid; gap: 20px;">
+                    <div style="background: var(--bg-dark); padding: 16px; border-radius: 8px; border-left: 3px solid var(--primary);">
+                        <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">环境参数</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">${loc.envParams}</div>
+                    </div>
+                    <div style="background: var(--bg-dark); padding: 16px; border-radius: 8px; border-left: 3px solid var(--secondary);">
+                        <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">重力环境</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">${loc.gravity}</div>
+                    </div>
+                    <div style="background: var(--bg-dark); padding: 16px; border-radius: 8px; border-left: 3px solid var(--accent);">
+                        <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">主要特产/资源</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">${loc.resources}</div>
+                    </div>
+                    <div style="background: var(--bg-dark); padding: 20px; border-radius: 8px;">
+                        <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">战略意义</div>
+                        <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.8;">${loc.strategic}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createLocation() {
+            alert('新建地点功能即将上线');
+        }
+
+        // ===== 科技规则 =====
+        function toggleAccordion(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.accordion-icon');
+            
+            if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+                content.style.maxHeight = '0px';
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function createRule() {
+            alert('新建规则功能即将上线');
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCharacters();
+            renderLocationDetails();
+        });
+
+        // 点击 Modal 外部关闭
+        document.getElementById('characterModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                closeCharacterModal();
+            }
+        });
+    </script>
+</body>
+</html>="hidden" id="characterId">
+                    <div class="form-group">
                         <label class="form-label">角色姓名 *</label>
                         <input type="text" class="form-input" id="charName" required placeholder="输入角色姓名">
                     </div>
