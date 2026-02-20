@@ -181,6 +181,9 @@
 
         .content-header {
             margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .content-title {
@@ -197,131 +200,202 @@
             color: var(--text-secondary);
         }
 
-        /* 统计卡片 */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+        .header-actions {
+            display: flex;
+            gap: 12px;
         }
 
-        .stat-card {
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* Tab 内容面板 */
+        .tab-panels {
+            position: relative;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 卡片网格 */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 12px;
             padding: 20px;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
-        .stat-card:hover {
-            transform: translateY(-2px);
+        .card:hover {
+            transform: translateY(-4px);
+            background: rgba(255,255,255,0.05);
             border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
 
-        .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 4px;
-        }
-
-        .stat-label {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        /* 最近活动 */
-        .activity-section {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 24px;
-        }
-
-        .activity-header {
+        .card-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            align-items: flex-start;
+            margin-bottom: 12px;
         }
 
-        .activity-title {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .activity-list {
-            list-style: none;
-        }
-
-        .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px 0;
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-
-        .activity-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(102, 126, 234, 0.15);
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 20px;
         }
 
-        .activity-content {
-            flex: 1;
+        .card-status {
+            padding: 4px 10px;
+            background: rgba(102, 126, 234, 0.15);
+            border-radius: 20px;
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: 500;
         }
 
-        .activity-text {
-            font-size: 14px;
-            color: var(--text-primary);
-            margin-bottom: 4px;
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
         }
 
-        .activity-meta {
+        .card-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 12px;
             font-size: 12px;
             color: var(--text-secondary);
         }
 
-        /* 快速操作 */
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .quick-btn {
+        .card-meta span {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px;
-            background: rgba(102, 126, 234, 0.1);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 8px;
-            color: var(--primary);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
+            gap: 4px;
         }
 
-        .quick-btn:hover {
-            background: rgba(102, 126, 234, 0.2);
-            transform: translateY(-1px);
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--card-bg);
+            border: 1px dashed var(--card-border);
+            border-radius: 12px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* 树形目录样式 */
+        .tree-view {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .tree-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tree-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .tree-item.active {
+            background: rgba(102, 126, 234, 0.15);
+        }
+
+        .tree-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .tree-children {
+            margin-left: 20px;
+            border-left: 1px solid var(--card-border);
+            padding-left: 10px;
         }
 
         /* 响应式 */
@@ -341,21 +415,10 @@
         }
 
         @media (max-width: 768px) {
-            nav {
-                padding: 12px 20px;
-            }
-            
-            .nav-links {
-                display: none;
-            }
-            
-            .content {
-                padding: 20px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+            nav { padding: 12px 20px; }
+            .nav-links { display: none; }
+            .content { padding: 20px; }
+            .card-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -367,8 +430,8 @@
     <nav>
         <div class="logo">✨ 构筑宇宙</div>
         <ul class="nav-links">
-            <li><a href="index.html" class="active">工作台</a></li>
-            <li><a href="worldbuilding.html">世界观设定</a></li>
+            <li><a href="index.html">工作台</a></li>
+            <li><a href="worldbuilding.html" class="active">世界观设定</a></li>
             <li><a href="outline.html">剧情大纲</a></li>
             <li><a href="editor.html">沉浸写作</a></li>
             <li><a href="docs.html">开发文档</a></li>
@@ -377,42 +440,36 @@
 
     <!-- 主容器 -->
     <div class="main-container">
-        <!-- 侧边栏 -->
+        <!-- 侧边栏 - Tab 切换 -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-title">工作台</div>
-                <div class="sidebar-subtitle">概览与统计</div>
+                <div class="sidebar-title">世界观设定</div>
+                <div class="sidebar-subtitle">管理你的架空世界</div>
             </div>
             
             <ul class="tab-menu">
                 <li class="tab-item">
-                    <a class="tab-link active" href="index.html">
-                        <span class="tab-icon">📊</span>
-                        <span class="tab-text">概览</span>
+                    <a class="tab-link active" data-tab="characters" onclick="switchTab('characters')">
+                        <span class="tab-icon">👤</span>
+                        <span class="tab-text">人物档案</span>
                     </a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link" href="worldbuilding.html">
-                        <span class="tab-icon">🌍</span>
-                        <span class="tab-text">世界观</span>
+                    <a class="tab-link" data-tab="factions" onclick="switchTab('factions')">
+                        <span class="tab-icon">⚔️</span>
+                        <span class="tab-text">势力阵营</span>
                     </a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link" href="outline.html">
-                        <span class="tab-icon">📋</span>
-                        <span class="tab-text">大纲</span>
+                    <a class="tab-link" data-tab="geography" onclick="switchTab('geography')">
+                        <span class="tab-icon">🗺️</span>
+                        <span class="tab-text">星图地理</span>
                     </a>
                 </li>
                 <li class="tab-item">
-                    <a class="tab-link" href="editor.html">
-                        <span class="tab-icon">✍️</span>
-                        <span class="tab-text">写作</span>
-                    </a>
-                </li>
-                <li class="tab-item">
-                    <a class="tab-link" href="reader.html">
-                        <span class="tab-icon">📖</span>
-                        <span class="tab-text">阅读</span>
+                    <a class="tab-link" data-tab="technology" onclick="switchTab('technology')">
+                        <span class="tab-icon">⚙️</span>
+                        <span class="tab-text">科技规则</span>
                     </a>
                 </li>
             </ul>
@@ -420,59 +477,236 @@
 
         <!-- 内容区 -->
         <main class="content">
-            <div class="content-header">
-                <h1 class="content-title">工作台概览</h1>
-                <p class="content-desc">查看你的创作进度和最近活动</p>
+            <!-- 人物档案 Tab -->
+            <div id="characters" class="tab-panel active">
+                <div class="content-header">
+                    <div>
+                        <h1 class="content-title">人物档案</h1>
+                        <p class="content-desc">管理你故事中的角色，记录他们的背景、性格与关系</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="createItem('character')">+ 新建角色</button>
+                    </div>
+                </div>
+
+                <div class="card-grid" id="characters-grid">
+                    <!-- 示例角色卡片 -->
+                    <div class="card" onclick="editItem('character', 1)">
+                        <div class="card-header">
+                            <div class="card-icon">🧙‍♂️</div>
+                            <span class="card-status">主角</span>
+                        </div>
+                        <h3 class="card-title">艾瑞恩·星语</h3>
+                        <p class="card-desc">来自边缘星域的年轻法师，拥有罕见的星界感知能力。性格内敛但意志坚定。</p>
+                        <div class="card-meta">
+                            <span>🎭 法师</span>
+                            <span>⭐ 22岁</span>
+                        </div>
+                    </div>
+
+                    <div class="card" onclick="editItem('character', 2)">
+                        <div class="card-header">
+                            <div class="card-icon">⚔️</div>
+                            <span class="card-status">配角</span>
+                        </div>
+                        <h3 class="card-title">凯拉·铁心</h3>
+                        <p class="card-desc">前星际佣兵，现为艾瑞恩的护卫。实战经验丰富，擅长近身格斗与战术规划。</p>
+                        <div class="card-meta">
+                            <span>🎭 战士</span>
+                            <span>⭐ 28岁</span>
+                        </div>
+                    </div>
+
+                    <!-- 空状态占位 -->
+                    <div class="card empty-card" onclick="createItem('character')">
+                        <div class="empty-state-small">
+                            <div class="empty-icon">+</div>
+                            <div class="empty-title">创建新角色</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- 统计卡片 -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value">0</div>
-                    <div class="stat-label">正在进行的作品</div>
+            <!-- 势力阵营 Tab -->
+            <div id="factions" class="tab-panel">
+                <div class="content-header">
+                    <div>
+                        <h1 class="content-title">势力阵营</h1>
+                        <p class="content-desc">构建故事中的组织、派系与政治力量</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="createItem('faction')">+ 新建势力</button>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value">0</div>
-                    <div class="stat-label">总字数</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">0</div>
-                    <div class="stat-label">已创建角色</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">0</div>
-                    <div class="stat-label">今日写作</div>
+
+                <div class="card-grid" id="factions-grid">
+                    <div class="card faction-card" onclick="editItem('faction', 1)">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">🏛️</div>
+                            <span class="card-status" style="background: rgba(102, 126, 234, 0.2); color: #667eea;">主导势力</span>
+                        </div>
+                        <h3 class="card-title">星界议会</h3>
+                        <p class="card-desc">统治已知星域的至高权力机构，由七大星系代表组成。主张秩序与稳定，但内部派系斗争不断。</p>
+                        <div class="faction-stats">
+                            <div class="stat-bar">
+                                <span>影响力</span>
+                                <div class="bar"><div class="fill" style="width: 95%"></div></div>
+                            </div>
+                            <div class="stat-bar">
+                                <span>军事实力</span>
+                                <div class="bar"><div class="fill" style="width: 88%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card faction-card" onclick="editItem('faction', 2)">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">⚡</div>
+                            <span class="card-status" style="background: rgba(245, 87, 108, 0.2); color: #f5576c;">反抗组织</span>
+                        </div>
+                        <h3 class="card-title">自由星盟</h3>
+                        <p class="card-desc">由边缘星系和独立势力组成的松散联盟，反对星界议会的集权统治。主张各星系自治与自由贸易。</p>
+                        <div class="faction-stats">
+                            <div class="stat-bar">
+                                <span>影响力</span>
+                                <div class="bar"><div class="fill" style="width: 45%"></div></div>
+                            </div>
+                            <div class="stat-bar">
+                                <span>军事实力</span>
+                                <div class="bar"><div class="fill" style="width: 62%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card empty-card" onclick="createItem('faction')">
+                        <div class="empty-state-small">
+                            <div class="empty-icon">+</div>
+                            <div class="empty-title">创建新势力</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- 最近活动 -->
-            <div class="activity-section">
-                <div class="activity-header">
-                    <h3 class="activity-title">最近活动</h3>
+            <!-- 星图地理 Tab -->
+            <div id="geography" class="tab-panel">
+                <div class="content-header">
+                    <div>
+                        <h1 class="content-title">星图地理</h1>
+                        <p class="content-desc">绘制你的世界观地图，标注重要地点与区域</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary">📤 导入地图</button>
+                        <button class="btn btn-primary" onclick="createItem('location')">+ 新建地点</button>
+                    </div>
                 </div>
-                <ul class="activity-list">
-                    <li class="activity-item">
-                        <div class="activity-icon">🎉</div>
-                        <div class="activity-content">
-                            <div class="activity-text">欢迎来到构筑宇宙！</div>
-                            <div class="activity-meta">开始使用平台创建你的第一个作品</div>
-                        </div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon">📚</div>
-                        <div class="activity-content">
-                            <div class="activity-text">查看开发文档</div>
-                            <div class="activity-meta">了解如何使用各项功能</div>
-                        </div>
-                    </li>
-                </ul>
 
-                <!-- 快速操作 -->
-                <div class="quick-actions">
-                    <a href="editor.html" class="quick-btn">✍️ 开始写作</a>
-                    <a href="worldbuilding.html" class="quick-btn">🌍 构建世界观</a>
-                    <a href="outline.html" class="quick-btn">📋 创建大纲</a>
-                    <a href="docs.html" class="quick-btn">📖 查看文档</a>
+                <div class="map-container">
+                    <div class="map-viewport">
+                        <div class="map-placeholder">
+                            <div class="map-icon">🗺️</div>
+                            <h3>星图预览区</h3>
+                            <p>在这里将显示你的星域地图<br>支持缩放、标记、路径规划等功能</p>
+                            <button class="btn btn-primary" style="margin-top: 20px;">🎨 设计地图</button>
+                        </div>
+                    </div>
+                    
+                    <div class="location-list">
+                        <h4 class="list-title">📍 重要地点</h4>
+                        <div class="location-items">
+                            <div class="location-item" onclick="editItem('location', 1)">
+                                <span class="location-icon">🏛️</span>
+                                <div class="location-info">
+                                    <div class="location-name">中央星域 · 议会之都</div>
+                                    <div class="location-type">政治中心</div>
+                                </div>
+                            </div>
+                            <div class="location-item" onclick="editItem('location', 2)">
+                                <span class="location-icon">🔬</span>
+                                <div class="location-info">
+                                    <div class="location-name">边缘星域 · 研究站阿尔法</div>
+                                    <div class="location-type">科研设施</div>
+                                </div>
+                            </div>
+                            <div class="location-item" onclick="editItem('location', 3)">
+                                <span class="location-icon">⚔️</span>
+                                <div class="location-info">
+                                    <div class="location-name">边境地带 · 冲突区</div>
+                                    <div class="location-type">军事区域</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 科技规则 Tab -->
+            <div id="technology" class="tab-panel">
+                <div class="content-header">
+                    <div>
+                        <h1 class="content-title">科技规则</h1>
+                        <p class="content-desc">定义世界的物理法则、魔法体系与技术树</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="createItem('rule')">+ 新建规则</button>
+                    </div>
+                </div>
+
+                <div class="tech-tree-container">
+                    <div class="tech-categories">
+                        <div class="tech-category active" data-category="magic">
+                            <span class="cat-icon">✨</span>
+                            <span class="cat-name">魔法体系</span>
+                        </div>
+                        <div class="tech-category" data-category="tech">
+                            <span class="cat-icon">🚀</span>
+                            <span class="cat-name">科技树</span>
+                        </div>
+                        <div class="tech-category" data-category="physics">
+                            <span class="cat-icon">⚛️</span>
+                            <span class="cat-name">物理法则</span>
+                        </div>
+                        <div class="tech-category" data-category="biology">
+                            <span class="cat-icon">🧬</span>
+                            <span class="cat-name">生物生态</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-content">
+                        <div class="rule-list">
+                            <div class="rule-card">
+                                <div class="rule-header">
+                                    <span class="rule-type">核心规则</span>
+                                    <span class="rule-priority">高</span>
+                                </div>
+                                <h4 class="rule-title">星界共鸣</h4>
+                                <p class="rule-desc">所有魔法都源于星界能量的共鸣。施法者通过与特定星座建立精神链接来引导能量。共鸣强度与施法者的精神力和星座位置相关。</p>
+                                <div class="rule-tags">
+                                    <span class="tag">魔法基础</span>
+                                    <span class="tag">能量体系</span>
+                                </div>
+                            </div>
+
+                            <div class="rule-card">
+                                <div class="rule-header">
+                                    <span class="rule-type">进阶规则</span>
+                                    <span class="rule-priority">中</span>
+                                </div>
+                                <h4 class="rule-title">共鸣反噬</h4>
+                                <p class="rule-desc">当施法者强行引导超过自身承受极限的星界能量时，将遭受共鸣反噬。反噬程度从轻微头痛到精神崩溃不等。</p>
+                                <div class="rule-tags">
+                                    <span class="tag">风险控制</span>
+                                    <span class="tag">副作用</span>
+                                </div>
+                            </div>
+
+                            <div class="rule-card add-rule" onclick="createItem('rule')">
+                                <div class="add-rule-content">
+                                    <span class="add-icon">+</span>
+                                    <span>添加新规则</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -490,6 +724,64 @@
             star.style.opacity = Math.random() * 0.8 + 0.2;
             starsContainer.appendChild(star);
         }
+
+        // Tab 切换功能
+        function switchTab(tabName) {
+            // 更新侧边栏激活状态
+            document.querySelectorAll('.tab-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.tab === tabName) {
+                    link.classList.add('active');
+                }
+            });
+
+            // 更新内容面板
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+
+            // 更新URL hash（不改变页面位置）
+            history.replaceState(null, null, '#' + tabName);
+        }
+
+        // 页面加载时检查 hash
+        window.addEventListener('load', () => {
+            const hash = window.location.hash.slice(1);
+            if (hash && ['characters', 'factions', 'geography', 'technology'].includes(hash)) {
+                switchTab(hash);
+            }
+        });
+
+        // 创建新项目
+        function createItem(type) {
+            const typeNames = {
+                'character': '角色',
+                'faction': '势力',
+                'location': '地点',
+                'rule': '规则'
+            };
+            alert('创建新' + typeNames[type] + '功能即将上线！\n\n这里将打开一个编辑器表单，用于填写详细信息。');
+        }
+
+        // 编辑项目
+        function editItem(type, id) {
+            const typeNames = {
+                'character': '角色',
+                'faction': '势力',
+                'location': '地点',
+                'rule': '规则'
+            };
+            alert('编辑' + typeNames[type] + ' ID: ' + id + '\n\n这里将打开编辑界面。');
+        }
+
+        // 科技规则分类切换
+        document.querySelectorAll('.tech-category').forEach(cat => {
+            cat.addEventListener('click', () => {
+                document.querySelectorAll('.tech-category').forEach(c => c.classList.remove('active'));
+                cat.classList.add('active');
+            });
+        });
     </script>
 </body>
 </html>
