@@ -2,8 +2,7 @@
 import { computed } from 'vue'
 import { useAppStore } from '@/stores/appStore'
 import ExplorerPanel from '@/components/modules/explorer/ExplorerPanel.vue'
-import WorldRulesPanel from '@/components/modules/lore/WorldRulesPanel.vue'
-import FactionsPanel from '@/components/modules/lore/FactionsPanel.vue'
+import LorePanel from '@/components/modules/lore/LorePanel.vue'
 
 const appStore = useAppStore()
 
@@ -21,7 +20,7 @@ const currentPanelTitle = computed(() => {
 const currentPanelComponent = computed(() => {
   switch (appStore.activePanel) {
     case 'explorer': return ExplorerPanel
-    case 'lore': return WorldRulesPanel
+    case 'lore': return LorePanel
     // TODO: add other panels
     default: return null
   }
