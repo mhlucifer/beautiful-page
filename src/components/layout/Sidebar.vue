@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAppStore } from '@/stores/appStore'
+import ExplorerPanel from '@/components/modules/explorer/ExplorerPanel.vue'
+import WorldRulesPanel from '@/components/modules/lore/WorldRulesPanel.vue'
+import FactionsPanel from '@/components/modules/lore/FactionsPanel.vue'
 
 const appStore = useAppStore()
 
-const currentPanel = computed(() => {
+const currentPanelTitle = computed(() => {
   switch (appStore.activePanel) {
     case 'explorer': return '资源管理器'
     case 'characters': return '角色'
@@ -14,13 +17,22 @@ const currentPanel = computed(() => {
     default: return '面板'
   }
 })
+
+const currentPanelComponent = computed(() => {
+  switch (appStore.activePanel) {
+    case 'explorer': return ExplorerPanel
+    case 'lore': return WorldRulesPanel
+    // TODO: add other panels
+    default: return null
+  }
+})
 </script>
 
 <template>
   <div class="flex h-full flex-col border-r border-border bg-card">
     <!-- Header -->
     <div class="flex h-12 items-center justify-between border-b border-border px-4">
-      <h2 class="text-sm font-semibold text-foreground">{{ currentPanel }}</h2>
+      <h2 class="text-sm font-semibold text-foreground">{{ currentPanelTitle }}</h2>
       <button
         @click="appStore.toggleSidebar"
         class="flex h-6 w-6 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -33,8 +45,11 @@ const currentPanel = computed(() => {
     </div>
 
     <!-- Panel Content -->
-    <div class="flex-1 overflow-hidden p-4">
-      <p class="text-sm text-muted-foreground">{{ currentPanel }} 内容区域</p>
+    <div class="flex-1 overflow-hidden">
+      <component :is="currentPanelComponent" v-if="currentPanelComponent" />
+      <div v-else class="p-4">
+        <p class="text-sm text-muted-foreground">{{ currentPanelTitle }} 内容区域（开发中）</p>
+      </div>
     </div>
   </div>
 </template>
