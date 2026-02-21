@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { db } from '@/db/database'
-import type { Character, CharacterFormData } from '@/types'
+import type { Character, CharacterFormData, EmotionalState } from '@/types'
 
 export const useCharacterStore = defineStore('character', () => {
   // State
@@ -47,6 +47,14 @@ export const useCharacterStore = defineStore('character', () => {
 
   async function createCharacter(data: CharacterFormData, projectId: string): Promise<Character> {
     const now = Date.now()
+    
+    // 创建完整的 emotionalState，避免 Partial 类型问题
+    const emotionalState: EmotionalState = {
+      currentMood: data.emotionalState?.currentMood || '',
+      relationships: data.emotionalState?.relationships || [],
+      mentalDefense: data.emotionalState?.mentalDefense ?? 50,
+    }
+    
     const newCharacter: Character = {
       id: crypto.randomUUID(),
       projectId,
@@ -55,12 +63,7 @@ export const useCharacterStore = defineStore('character', () => {
       personality: data.personality,
       currentKnowledge: data.currentKnowledge || [],
       assets: data.assets || [],
-      emotionalState: {
-        currentMood: '',
-        relationships: [],
-        mentalDefense: 50,
-        ...data.emotionalState,
-      },
+      emotionalState,
       history: [],
       createdAt: now,
       updatedAt: now,
@@ -76,9 +79,19 @@ export const useCharacterStore = defineStore('character', () => {
     const character = characters.value.find(c => c.id === id)
     if (!character) throw new Error('Character not found')
 
-    const updated = {
+    // 处理 emotionalState 更新
+    let emotionalState = character.emotionalState
+    if (updates.emotionalState) {
+      emotionalState = {
+        ...character.emotionalState,
+        ...updates.emotionalState,
+      }
+    }
+
+    const updated: Character = {
       ...character,
       ...updates,
+      emotionalState,
       updatedAt: Date.now(),
     }
 
