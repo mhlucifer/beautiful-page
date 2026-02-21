@@ -2,7 +2,6 @@
 import { onMounted } from 'vue'
 import { useAppStore } from '@/stores/appStore'
 import AppLayout from '@/components/layout/AppLayout.vue'
-import { Toaster } from '@/components/ui/toast'
 
 const appStore = useAppStore()
 
@@ -20,6 +19,5 @@ onMounted(async () => {
         <p class="text-sm text-muted-foreground">正在初始化南柯 Universe...</p>
       </div>
     </div>
-    <Toaster />
   </div>
 </template>
