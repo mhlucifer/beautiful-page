@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAppStore } from '@/stores/appStore'
-import ActivityBar from './ActivityBar.vue'
-import Sidebar from './Sidebar.vue'
-import EditorPanel from './EditorPanel.vue'
-import StatusBar from './StatusBar.vue'
+import ActivityBar from '@/components/layout/ActivityBar.vue'
+import Sidebar from '@/components/layout/Sidebar.vue'
+import EditorPanel from '@/components/layout/EditorPanel.vue'
+import StatusBar from '@/components/layout/StatusBar.vue'
 
 const appStore = useAppStore()
 
