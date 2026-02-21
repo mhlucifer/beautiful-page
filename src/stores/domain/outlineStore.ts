@@ -99,100 +99,26 @@ export const useOutlineStore = defineStore('outline', () => {
     return newNode
   }
 
-  async function updateNode(id: string, updates: Partial<OutlineNode>) {
-    const node = nodes.value.find(n => n.id === id)
-    if (!node) throw new Error('Node not found')
-
-    const updated = {
-      ...node,
-      ...updates,
-      updatedAt: Date.now(),
-    }
-
-    await db.outlineNodes.update(id, updated)
+  return {
+    // State
+    nodes,
+    sceneDetails,
+    currentNode,
+    currentSceneDetail,
+    expandedNodes,
+    isLoading,
+    error,
     
-    const index = nodes.value.findIndex(n => n.id === id)
-    if (index !== -1) {
-      nodes.value[index] = updated
-    }
+    // Getters
+    treeData,
+    books,
+    volumes,
+    chapters,
+    scenes,
+    wordCountTotal,
     
-    if (currentNode.value?.id === id) {
-      currentNode.value = updated
-    }
+    // Actions
+    loadNodes,
+    createNode,
   }
-
-  async function deleteNode(id: string) {
-    // 递归删除子节点
-    const deleteRecursively = async (nodeId: string) => {
-      const children = nodes.value.filter(n => n.parentId === nodeId)
-      for (const child of children) {
-        await deleteRecursively(child.id)
-      }
-      await db.outlineNodes.delete(nodeId)
-    }
-
-    await deleteRecursively(id)
-    
-    // 重新加载节点
-    nodes.value = nodes.value.filter(n => {
-      let current = n
-      while (current.parentId) {
-        if (current.parentId === id) return false
-        current = nodes.value.find(node => node.id === current.parentId)!
-        if (!current) break
-      }
-      return n.id !== id
-    })
-    
-    if (currentNode.value?.id === id) {
-      currentNode.value = null
-    }
-  }
-
-  async function moveNode(id: string, newParentId: string | null, newOrder: number) {
-    const node = nodes.value.find(n => n.id === id)
-    if (!node) throw new Error('Node not found')
-
-    // 检查是否会导致循环引用
-    if (newParentId) {
-      let current = nodes.value.find(n => n.id === newParentId)
-      while (current) {
-        if (current.id === id) {
-          throw new Error('Cannot move a node to its own descendant')
-        }
-        current = nodes.value.find(n => n.id === current!.parentId)
-      }
-    }
-
-    // 更新同层级其他节点的 order
-    const siblings = nodes.value.filter(n => 
-      n.parentId === newParentId && n.id !== id
-    )
-    
-    for (const sibling of siblings) {
-      if (newParentId === node.parentId) {
-        // 同层级移动
-        if (node.order < newOrder && sibling.order > node.order && sibling.order <= newOrder) {
-          await updateNode(sibling.id, { order: sibling.order - 1 })
-        } else if (node.order > newOrder && sibling.order >= newOrder && sibling.order < node.order) {
-          await updateNode(sibling.id, { order: sibling.order + 1 })
-        }
-      } else {
-        // 跨层级移动
-        if (sibling.order >= newOrder) {
-          await updateNode(sibling.id, { order: sibling.order + 1 })
-        }
-      }
-    }
-
-    // 更新当前节点
-    await updateNode(id, {
-      parentId: newParentId,
-      order: newOrder,
-    })
-  }
-
-  // Scene Detail Actions
-  async function loadSceneDetail(nodeId: string) {
-    try {
-      const detail =
+})

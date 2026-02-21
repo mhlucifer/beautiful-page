@@ -1,6 +1,5 @@
 import { ref, computed } from 'vue'
 import { useCharacterStore } from '@/stores/domain/characterStore'
-import { useToast } from '@/components/ui/toast/use-toast'
 import type { CharacterFormData, Character } from '@/types'
 
 export interface UseCharacterOptions {
@@ -12,7 +11,6 @@ export function useCharacter(options: UseCharacterOptions = {}) {
   const { showToast = true, autoRetry = 3 } = options
   
   const characterStore = useCharacterStore()
-  const { toast } = useToast()
   
   // Local state
   const isLoading = ref(false)
@@ -22,8 +20,7 @@ export function useCharacter(options: UseCharacterOptions = {}) {
   // Cancel token for race condition prevention
   let cancelToken = 0
   
-  // ============ Helper Functions ============
-  
+  // Helper Functions
   function validateData(data: CharacterFormData): string | null {
     if (!data.name || data.name.trim() === '') {
       return '角色名称不能为空'
@@ -57,12 +54,48 @@ export function useCharacter(options: UseCharacterOptions = {}) {
     throw lastError
   }
   
-  function showSuccess(message: string) {
-    if (showToast) {
-      toast({
-        title: '成功',
-        description: message,
-        variant: 'default',
-      })
+  // Main Actions
+  async function createCharacter(data: CharacterFormData, projectId: string): Promise<Character | null> {
+    const operationId = ++cancelToken
+    currentOperation.value = 'create'
+    isLoading.value = true
+    error.value = null
+    
+    // 表单校验
+    const validationError = validateData(data)
+    if (validationError) {
+      error.value = new Error(validationError)
+      isLoading.value = false
+      return null
+    }
+    
+    try {
+      const newCharacter = await withRetry(
+        () => characterStore.createCharacter(data, projectId),
+        autoRetry
+      )
+      
+      if (operationId !== cancelToken) {
+        return null
+      }
+      
+      return newCharacter
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : '创建角色失败'
+      error.value = new Error(errorMessage)
+      return null
+    } finally {
+      if (operationId === cancelToken) {
+        isLoading.value = false
+        currentOperation.value = ''
+      }
     }
   }
+  
+  return {
+    isLoading,
+    error,
+    currentOperation,
+    createCharacter,
+  }
+}
