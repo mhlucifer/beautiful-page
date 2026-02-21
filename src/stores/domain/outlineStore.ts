@@ -41,7 +41,11 @@ export const useOutlineStore = defineStore('outline', () => {
   const scenes = computed(() => nodes.value.filter(n => n.type === 'scene'))
 
   const wordCountTotal = computed(() => {
-    return nodes.value.reduce((sum, node) => sum + (node.metadata?.wordCount || 0), 0)
+    // 使用 metadata 中的 wordCount，如果不存在则为 0
+    return nodes.value.reduce((sum, node) => {
+      const wordCount = (node.metadata as { wordCount?: number })?.wordCount || 0
+      return sum + wordCount
+    }, 0)
   })
 
   // Actions
@@ -99,6 +103,28 @@ export const useOutlineStore = defineStore('outline', () => {
     return newNode
   }
 
+  async function updateNode(id: string, updates: Partial<OutlineNode>) {
+    const node = nodes.value.find(n => n.id === id)
+    if (!node) throw new Error('Node not found')
+
+    const updated: OutlineNode = {
+      ...node,
+      ...updates,
+      updatedAt: Date.now(),
+    }
+
+    await db.outlineNodes.put(updated)
+    
+    const index = nodes.value.findIndex(n => n.id === id)
+    if (index !== -1) {
+      nodes.value[index] = updated
+    }
+    
+    if (currentNode.value?.id === id) {
+      currentNode.value = updated
+    }
+  }
+
   return {
     // State
     nodes,
@@ -120,5 +146,6 @@ export const useOutlineStore = defineStore('outline', () => {
     // Actions
     loadNodes,
     createNode,
+    updateNode,
   }
 })

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { db } from '@/db/database'
-import type { Character, CharacterFormData, EmotionalState } from '@/types'
+import type { Character, CharacterFormData } from '@/types'
 
 export const useCharacterStore = defineStore('character', () => {
   // State
@@ -47,14 +47,6 @@ export const useCharacterStore = defineStore('character', () => {
 
   async function createCharacter(data: CharacterFormData, projectId: string): Promise<Character> {
     const now = Date.now()
-    
-    // 创建完整的 emotionalState，避免 Partial 类型问题
-    const emotionalState: EmotionalState = {
-      currentMood: data.emotionalState?.currentMood || '',
-      relationships: data.emotionalState?.relationships || [],
-      mentalDefense: data.emotionalState?.mentalDefense ?? 50,
-    }
-    
     const newCharacter: Character = {
       id: crypto.randomUUID(),
       projectId,
@@ -63,7 +55,11 @@ export const useCharacterStore = defineStore('character', () => {
       personality: data.personality,
       currentKnowledge: data.currentKnowledge || [],
       assets: data.assets || [],
-      emotionalState,
+      emotionalState: {
+        currentMood: data.emotionalState?.currentMood || '',
+        relationships: data.emotionalState?.relationships || [],
+        mentalDefense: data.emotionalState?.mentalDefense ?? 50,
+      },
       history: [],
       createdAt: now,
       updatedAt: now,
@@ -79,23 +75,19 @@ export const useCharacterStore = defineStore('character', () => {
     const character = characters.value.find(c => c.id === id)
     if (!character) throw new Error('Character not found')
 
-    // 处理 emotionalState 更新
-    let emotionalState = character.emotionalState
-    if (updates.emotionalState) {
-      emotionalState = {
-        ...character.emotionalState,
-        ...updates.emotionalState,
-      }
-    }
-
+    // 创建更新对象
     const updated: Character = {
       ...character,
       ...updates,
-      emotionalState,
+      emotionalState: updates.emotionalState ? {
+        ...character.emotionalState,
+        ...updates.emotionalState,
+      } : character.emotionalState,
       updatedAt: Date.now(),
     }
 
-    await db.characters.update(id, updated)
+    // 使用 put 而不是 update，避免 UpdateSpec 类型问题
+    await db.characters.put(updated)
     
     const index = characters.value.findIndex(c => c.id === id)
     if (index !== -1) {
