@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { FolderOpen, FileText, ChevronRight, ChevronDown } from 'lucide-vue-next'
-import EmptyState from '@/components/shared/EmptyState.vue'
 
 interface TreeNode {
   id: string
@@ -43,16 +42,10 @@ function toggleNode(node: TreeNode) {
 
 <template>
   <div class="h-full overflow-y-auto">
-    <EmptyState
-      v-if="!hasContent"
-      icon="folder-open"
-      title="资源管理器"
-      description="创建一个新项目来开始你的创作之旅"
-      :actions="[
-        { label: '新建项目', variant: 'default' },
-        { label: '打开项目', variant: 'outline' },
-      ]"
-    />
+    <div v-if="!hasContent" class="p-4 text-center text-muted-foreground">
+      <FolderOpen class="h-12 w-12 mx-auto mb-2 opacity-50" />
+      <p>暂无内容</p>
+    </div>
     <div v-else class="p-2">
       <div 
         v-for="node in treeData" 
